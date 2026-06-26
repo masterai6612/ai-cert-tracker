@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cert Tracker · Road to CISO</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121933; --panel2:#1a2342; --line:#26304f;
+    --txt:#e8edf9; --muted:#93a0c4; --cyan:#22d3ee; --indigo:#6366f1;
+    --emerald:#34d399; --amber:#fbbf24; --rose:#fb7185; --violet:#a78bfa;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%,#1b2550 0%,var(--bg) 55%);color:var(--txt);min-height:100vh}
+  a{color:var(--cyan)}
+  header{padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);background:rgba(10,15,32,.6);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--indigo),var(--cyan));
+    display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:var(--shadow)}
+  h1{font-size:19px;margin:0}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .ring{display:flex;align-items:center;gap:12px}
+  .ring small{color:var(--muted);font-size:12px;display:block}
+  nav{display:flex;gap:6px;padding:14px 26px 0;flex-wrap:wrap}
+  .tab{padding:9px 16px;border-radius:10px 10px 0 0;cursor:pointer;color:var(--muted);font-weight:600;font-size:14px;
+    border:1px solid transparent;border-bottom:none;user-select:none}
+  .tab.active{background:var(--panel);color:var(--txt);border-color:var(--line)}
+  main{padding:22px 26px 60px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+  .grid{display:grid;gap:16px}
+  .g4{grid-template-columns:repeat(4,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:880px){.g4,.g3,.g2{grid-template-columns:1fr}}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .stat .n{font-size:30px;font-weight:800}
+  .stat .l{color:var(--muted);font-size:12px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+  h2{font-size:16px;margin:0 0 14px} h3{font-size:14px;margin:0 0 8px}
+  .bar{height:9px;background:#0c1226;border-radius:99px;overflow:hidden}
+  .bar > i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--indigo),var(--cyan))}
+  .course{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--panel2)}
+  .course .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+  .pill{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:700}
+  .pill.sec{background:rgba(52,211,153,.15);color:var(--emerald)} .pill.eng{background:rgba(99,102,241,.18);color:#c7d2fe}
+  .pill.lead{background:rgba(167,139,250,.18);color:var(--violet)}
+  .item{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px dashed var(--line);font-size:14px}
+  .item:first-of-type{border-top:none}
+  .item input{width:18px;height:18px;accent-color:var(--cyan);cursor:pointer}
+  .item.done label{color:var(--muted);text-decoration:line-through}
+  .item .meta{margin-left:auto;color:var(--muted);font-size:12px}
+  label{cursor:pointer}
+  input,select,textarea,button{font-family:inherit}
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+  .field label{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  input[type=date],input[type=number],select,textarea{background:#0c1226;border:1px solid var(--line);color:var(--txt);
+    padding:10px 12px;border-radius:9px;font-size:14px;width:100%}
+  textarea{resize:vertical;min-height:64px}
+  button{background:linear-gradient(135deg,var(--indigo),var(--cyan));color:#06122a;border:none;padding:11px 16px;
+    border-radius:9px;font-weight:700;cursor:pointer;font-size:14px}
+  button.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  button.sm{padding:7px 12px;font-size:12px}
+  .logrow{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)}
+  .logrow .d{font-weight:700;min-width:96px}
+  .logrow .h{color:var(--cyan);font-weight:700;min-width:56px}
+  .logrow .c{color:var(--muted);font-size:13px}
+  .week{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;background:var(--panel2)}
+  .week.now{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan)}
+  .week .wh{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
+  .week .ph{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .week ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px;display:none}
+  .week.open ul{display:block}
+  .badge{font-size:11px;padding:3px 8px;border-radius:99px;background:rgba(34,211,238,.15);color:var(--cyan);font-weight:700}
+  .muted{color:var(--muted)} .em{color:var(--emerald)} .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px dashed var(--line)}
+  .li input{margin-top:3px;width:18px;height:18px;accent-color:var(--violet)}
+  .tmpl{background:#0c1226;border:1px solid var(--line);border-radius:9px;padding:12px;font-size:13px;color:var(--muted);white-space:pre-wrap;margin-top:8px}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel2);
+    border:1px solid var(--cyan);color:var(--txt);padding:12px 18px;border-radius:10px;box-shadow:var(--shadow);
+    transition:transform .3s;z-index:50;font-size:14px}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .hidden{display:none}
+  .donut{position:relative;width:60px;height:60px}
+  .donut svg{transform:rotate(-90deg)}
+  .donut .v{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">AI</div>
+    <div>
+      <h1>AI Certification Tracker</h1>
+      <div class="sub">Arvin's Road to CISO · 2–3 hrs/day · Mon–Fri</div>
+    </div>
+  </div>
+  <div class="ring">
+    <div class="donut">
+      <svg width="60" height="60"><circle cx="30" cy="30" r="25" stroke="#0c1226" stroke-width="8" fill="none"/>
+      <circle id="ovRing" cx="30" cy="30" r="25" stroke="url(#g)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="157"/>
+      <defs><linearGradient id="g"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs></svg>
+      <div class="v" id="ovPct">0%</div>
+    </div>
+    <div><small>Overall</small><strong id="ovLabel">0 / 0 courses</strong><br><small id="todayStr"></small></div>
+  </div>
+</header>
+
+<nav id="nav">
+  <div class="tab active" data-t="dash">Dashboard</div>
+  <div class="tab" data-t="plan">14-Week Plan</div>
+  <div class="tab" data-t="courses">Courses</div>
+  <div class="tab" data-t="log">Daily Log</div>
+  <div class="tab" data-t="linkedin">LinkedIn</div>
+</nav>
+
+<main>
+  <!-- DASHBOARD -->
+  <section id="dash">
+    <div class="grid g4" id="stats"></div>
+    <div class="panel">
+      <h2>Today's focus</h2>
+      <div id="todayFocus" class="muted">—</div>
+      <div class="row" style="margin-top:14px">
+        <button onclick="go('log')">Log today's session</button>
+        <button class="ghost" id="notifyBtn" onclick="enableNotify()">🔔 Enable daily reminders</button>
+        <button class="ghost sm" onclick="testNotify()">Test notification</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Program progress</h2>
+      <div id="progBars"></div>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section id="plan" class="hidden">
+    <div class="panel">
+      <h2>14-Week Study Plan · Jun 29 – Oct 2, 2026</h2>
+      <p class="muted" style="margin-top:-6px">Security-first ordering. Click a week to expand. Your current week is highlighted.</p>
+      <div class="row" style="margin:6px 0 16px">
+        <span class="pill sec">Phase 1 · Security</span>
+        <span class="pill eng">Phase 2 · Engineering</span>
+        <span class="pill lead">Phase 3 · Leadership</span>
+      </div>
+      <div id="weeks"></div>
+    </div>
+    <div class="panel">
+      <h3>Daily 2.5-hour template</h3>
+      <ul class="muted" style="margin:0;padding-left:18px;line-height:1.7">
+        <li><strong>0:00–1:30</strong> — Core lessons (videos + readings)</li>
+        <li><strong>1:30–2:15</strong> — Hands-on lab / quiz / practice (do, don't just watch)</li>
+        <li><strong>2:15–2:30</strong> — Capture 3 takeaways + draft one LinkedIn note</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- COURSES -->
+  <section id="courses" class="hidden">
+    <div class="panel">
+      <h2>Courses & certificates</h2>
+      <p class="muted" style="margin-top:-6px">Tick each course as you finish it. Progress saves automatically on this device.</p>
+      <div id="courseList"></div>
+    </div>
+  </section>
+
+  <!-- LOG -->
+  <section id="log" class="hidden">
+    <div class="grid g2">
+      <div class="panel">
+        <h2>Log a study session</h2>
+        <div class="field"><label>Date</label><input type="date" id="lDate"></div>
+        <div class="field"><label>Hours</label><input type="number" id="lHours" step="0.25" min="0" value="2.5"></div>
+        <div class="field"><label>Course / program</label><select id="lCourse"></select></div>
+        <div class="field"><label>What you covered</label><textarea id="lNotes" placeholder="Modules, labs, key takeaways…"></textarea></div>
+        <div class="row"><button onclick="addLog()">Add entry</button>
+          <button class="ghost sm" onclick="exportData()">Export backup</button>
+          <button class="ghost sm" onclick="document.getElementById('imp').click()">Import</button>
+          <input id="imp" type="file" accept="application/json" class="hidden" onchange="importData(event)">
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Recent sessions</h2>
+        <div id="logList" class="muted">No sessions logged yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LINKEDIN -->
+  <section id="linkedin" class="hidden">
+    <div class="panel">
+      <h2>LinkedIn & visibility plan</h2>
+      <p class="muted" style="margin-top:-6px">Build in public. Tick milestones as you post. Templates below.</p>
+      <div id="liList"></div>
+    </div>
+    <div class="panel">
+      <h3>Post templates</h3>
+      <div class="tmpl">🎓 Milestone post (when a cert completes):
+Just earned [CERT NAME] 🛡️ Part of my journey deepening AI security expertise on the road to CISO.
+Biggest takeaway: [one insight]. Next up: [next cert]. #AISecurity #GenAI #CyberSecurity #Coursera</div>
+      <div class="tmpl">🔧 Build-in-public post (weekly):
+Week [N] of my AI security certification sprint. This week: [topic — e.g. securing Copilot agents in Power Platform].
+One thing that surprised me: [insight]. Following along? Let's connect. #LearningInPublic #AISecurity</div>
+      <div class="tmpl">🧠 Teach-back post (turn notes into value):
+"[Concept] explained simply" — [2-3 sentence explainer from today's module].
+Saving this thread as I work through [program]. #AI #CloudSecurity #AWSBedrock</div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- DATA ---------- */
+const PROGRAMS=[
+ {id:"copilot",name:"Microsoft Copilot: Power Platform & Security",phase:"sec",provider:"Whizlabs",
+  courses:[{n:"Microsoft Copilot: Power Platform & Security Best Practices",done:false,note:"37% in progress"}]},
+ {id:"ibm",name:"IBM GenAI for Cybersecurity Professionals",phase:"sec",provider:"IBM",
+  courses:[{n:"GenAI: Introduction and Applications",done:false},
+           {n:"GenAI: Prompt Engineering Basics",done:false},
+           {n:"GenAI: Boost Your Cybersecurity Career",done:false,note:"1% in progress"}]},
+ {id:"aws",name:"AWS GenAI & AI Agents with Amazon Bedrock",phase:"sec",provider:"AWS",
+  courses:[{n:"Getting Started with AWS Generative AI for Developers",done:false,note:"13% in progress"},
+           {n:"Generative AI Applications with Amazon Bedrock",done:false},
+           {n:"Amazon Bedrock Customization, Optimization & Automation",done:false}]},
+ {id:"mseng",name:"Microsoft Generative AI Engineering",phase:"eng",provider:"Microsoft",
+  courses:[{n:"Getting started with generative AI in Azure",done:false},
+           {n:"Core generative models and techniques",done:false},
+           {n:"Working with large language models using Azure",done:false},
+           {n:"Multimodal and cross-modal AI integrations",done:false},
+           {n:"MLOps and responsible AI practices",done:false}]},
+ {id:"google",name:"Google Cloud Generative AI Leader",phase:"lead",provider:"Google Cloud",
+  courses:[{n:"Gen AI: Beyond the Chatbot",done:true},
+           {n:"Gen AI: Unlock Foundational Concepts",done:false},
+           {n:"Gen AI: Navigate the Landscape",done:false},
+           {n:"Gen AI Apps: Transform Your Work",done:false},
+           {n:"Gen AI Agents: Transform Your Organization",done:false}]},
+ {id:"vandy",name:"Generative AI Strategic Leader (Vanderbilt)",phase:"lead",provider:"Vanderbilt",
+  courses:[{n:"GenAI Deep Research: Strategic AI Edge for Leaders",done:false},
+           {n:"Prompt Engineering for ChatGPT",done:false},
+           {n:"Generative AI Primer",done:false},
+           {n:"Agentic AI and AI Agents: A Primer for Leaders",done:false}]}
+];
+
+const WEEKS=[
+ {w:1,start:"2026-06-29",phase:"sec",t:"Secure Copilot + start IBM",items:["Finish Microsoft Copilot: Power Platform & Security (37%→100%)","Note Copilot agent security best practices: DLP, env strategy, connector governance","Start IBM C1: GenAI Introduction & Applications"]},
+ {w:2,start:"2026-07-06",phase:"sec",t:"IBM cybersecurity core",items:["Finish IBM C1","IBM C2: Prompt Engineering Basics","Practice prompts for log triage / incident summaries"]},
+ {w:3,start:"2026-07-13",phase:"sec",t:"Finish IBM cert + resume AWS",items:["IBM C3: Boost Your Cybersecurity Career (complete IBM certificate ✅)","Resume AWS C1: Getting Started with AWS GenAI","LinkedIn: post IBM cert milestone"]},
+ {w:4,start:"2026-07-20",phase:"sec",t:"AWS Bedrock foundations",items:["Finish AWS C1","AWS C2: Generative AI Applications with Bedrock","Focus: IAM roles, Bedrock Guardrails, data privacy"]},
+ {w:5,start:"2026-07-27",phase:"sec",t:"AWS Bedrock applications",items:["Finish AWS C2","Start AWS C3: Customization, Optimization & Automation","Security emphasis: KMS encryption, PrivateLink, model access controls"]},
+ {w:6,start:"2026-08-03",phase:"eng",t:"Finish AWS + start MS Eng",items:["AWS C3 (complete AWS Bedrock certificate ✅)","MS Eng C1: Getting started with GenAI in Azure","LinkedIn: post AWS Bedrock cert milestone"]},
+ {w:7,start:"2026-08-10",phase:"eng",t:"Generative models",items:["MS Eng C2: Core generative models and techniques","Hands-on: Azure AI Studio walkthrough"]},
+ {w:8,start:"2026-08-17",phase:"eng",t:"LLMs on Azure",items:["MS Eng C3: Working with large language models using Azure","Note: content filters, responsible AI guardrails in Azure OpenAI"]},
+ {w:9,start:"2026-08-24",phase:"eng",t:"Multimodal AI",items:["MS Eng C4: Multimodal and cross-modal AI integrations","Mini-project: combine text + vision"]},
+ {w:10,start:"2026-08-31",phase:"eng",t:"MLOps & Responsible AI",items:["MS Eng C5: MLOps and responsible AI practices (complete MS GenAI Engineering ✅)","LinkedIn: post engineering cert + a teach-back on responsible AI"]},
+ {w:11,start:"2026-09-07",phase:"lead",t:"Google GenAI Leader I",items:["Google C2: Unlock Foundational Concepts","Google C3: Navigate the Landscape"]},
+ {w:12,start:"2026-09-14",phase:"lead",t:"Google GenAI Leader II",items:["Google C4: Gen AI Apps: Transform Your Work","Google C5: Gen AI Agents: Transform Your Organization (complete Google GenAI Leader ✅)"]},
+ {w:13,start:"2026-09-21",phase:"lead",t:"Strategic Leader I",items:["Vanderbilt C1: GenAI Deep Research for Leaders","Vanderbilt C2: Prompt Engineering for ChatGPT"]},
+ {w:14,start:"2026-09-28",phase:"lead",t:"Strategic Leader II + wrap",items:["Vanderbilt C3: Generative AI Primer","Vanderbilt C4: Agentic AI for Leaders (complete Strategic Leader ✅)","LinkedIn: capstone post — 6 certs, recap the journey"]}
+];
+
+const LINKEDIN=[
+ "Optimize LinkedIn headline: add 'AI Security' + 'Aspiring CISO'",
+ "Add completed Google 'Gen AI: Beyond the Chatbot' cert to profile",
+ "Post: kicking off a 14-week AI security certification sprint (Week 1)",
+ "Post IBM GenAI for Cybersecurity certificate (Week 3)",
+ "Post AWS Bedrock certificate + a securing-Bedrock tip (Week 6)",
+ "Post Microsoft GenAI Engineering certificate (Week 10)",
+ "Post Google Cloud GenAI Leader certificate (Week 12)",
+ "Post Vanderbilt Strategic Leader certificate (Week 14)",
+ "Write 1 build-in-public post per week (14 total)",
+ "Capstone recap post: all 6 certs + what's next on the CISO path"
+];
+
+/* ---------- STATE ---------- */
+const KEY="aicert_v1";
+let state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return s}catch(e){}
+  return {courses:{},logs:[],linkedin:{},notify:false};}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function cKey(p,i){return p+"::"+i;}
+function isDone(p,i,def){const k=cKey(p,i);return state.courses[k]!==undefined?state.courses[k]:def;}
+
+/* ---------- HELPERS ---------- */
+const fmt=d=>new Date(d+"T00:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"});
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);}
+function go(t){document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.t===t));
+  ["dash","plan","courses","log","linkedin"].forEach(s=>document.getElementById(s).classList.toggle("hidden",s!==t));}
+document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>go(x.dataset.t));
+
+/* ---------- RENDER ---------- */
+function counts(){let done=0,total=0;PROGRAMS.forEach(p=>p.courses.forEach((c,i)=>{total++;if(isDone(p.id,i,c.done))done++;}));return{done,total};}
+function progDonut(){const{done,total}=counts();const pct=total?Math.round(done/total*100):0;
+  document.getElementById("ovPct").textContent=pct+"%";
+  document.getElementById("ovLabel").textContent=done+" / "+total+" courses";
+  document.getElementById("ovRing").style.strokeDashoffset=157-(157*pct/100);}
+
+function weekdaysStreak(){
+  const days=new Set(state.logs.map(l=>l.date));let streak=0;let d=new Date();
+  for(let n=0;n<60;n++){const wd=d.getDay();const iso=d.toISOString().slice(0,10);
+    if(wd!==0&&wd!==6){if(days.has(iso))streak++;else if(iso!==new Date().toISOString().slice(0,10))break;}
+    d.setDate(d.getDate()-1);}
+  return streak;}
+function weekHours(){const now=new Date();const day=now.getDay();const monday=new Date(now);
+  monday.setDate(now.getDate()-((day+6)%7));monday.setHours(0,0,0,0);
+  return state.logs.filter(l=>new Date(l.date+"T00:00:00")>=monday).reduce((s,l)=>s+(+l.hours||0),0);}
+function totalHours(){return state.logs.reduce((s,l)=>s+(+l.hours||0),0);}
+
+function renderStats(){
+  const{done,total}=counts();const certs=PROGRAMS.filter(p=>p.courses.every((c,i)=>isDone(p.id,i,c.done))).length;
+  document.getElementById("stats").innerHTML=[
+    ["🔥 "+weekdaysStreak(),"Weekday streak"],
+    [weekHours().toFixed(1)+" h","Hours this week"],
+    [totalHours().toFixed(1)+" h","Total logged"],
+    [certs+" / "+PROGRAMS.length,"Certs complete"]
+  ].map(s=>`<div class="stat"><div class="n">${s[0]}</div><div class="l">${s[1]}</div></div>`).join("");
+}
+
+function renderProgBars(){
+  document.getElementById("progBars").innerHTML=PROGRAMS.map(p=>{
+    const tot=p.courses.length,dn=p.courses.filter((c,i)=>isDone(p.id,i,c.done)).length;
+    const pct=Math.round(dn/tot*100);
+    return `<div style="margin-bottom:14px"><div class="row" style="justify-content:space-between;margin-bottom:6px">
+      <span><span class="pill ${p.phase}">${p.phase==='sec'?'Security':p.phase==='eng'?'Engineering':'Leadership'}</span>
+      <strong style="margin-left:8px">${p.name}</strong></span>
+      <span class="muted">${dn}/${tot}</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div></div>`;}).join("");
+}
+
+function renderCourses(){
+  document.getElementById("courseList").innerHTML=PROGRAMS.map(p=>{
+    const tot=p.courses.length,dn=p.courses.filter((c,i)=>isDone(p.id,i,c.done)).length;
+    const rows=p.courses.map((c,i)=>{const d=isDone(p.id,i,c.done);
+      return `<div class="item ${d?'done':''}">
+        <input type="checkbox" ${d?'checked':''} onchange="toggleCourse('${p.id}',${i},this.checked)">
+        <label>${c.n}</label>${c.note?`<span class="meta">${c.note}</span>`:''}</div>`;}).join("");
+    return `<div class="course"><div class="top">
+      <strong>${p.name}</strong>
+      <span class="row"><span class="muted" style="font-size:12px">${p.provider}</span>
+      <span class="badge">${dn}/${tot}</span></span></div>${rows}</div>`;}).join("");
+}
+function toggleCourse(p,i,v){state.courses[cKey(p,i)]=v;save();renderAll();toast(v?"Nice — course marked complete ✅":"Marked incomplete");}
+
+function currentWeek(){const today=new Date();today.setHours(0,0,0,0);let cur=-1;
+  WEEKS.forEach((w,idx)=>{const s=new Date(w.start+"T00:00:00");const e=new Date(s);e.setDate(s.getDate()+6);
+    if(today>=s&&today<=e)cur=idx;});
+  if(cur<0){const first=new Date(WEEKS[0].start+"T00:00:00");if(today<first)cur=-2;else cur=WEEKS.length-1;}
+  return cur;}
+function renderWeeks(){const cur=currentWeek();
+  document.getElementById("weeks").innerHTML=WEEKS.map((w,idx)=>{
+    const s=new Date(w.start+"T00:00:00");const e=new Date(s);e.setDate(s.getDate()+4);
+    const now=idx===cur;
+    return `<div class="week ${now?'now open':''}" onclick="this.classList.toggle('open')">
+      <div class="wh"><div><span class="ph">Week ${w.w} · ${fmt(w.start)}–${e.toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>
+      <div style="margin-top:3px"><strong>${w.t}</strong></div></div>
+      <span class="row"><span class="pill ${w.phase}">${w.phase==='sec'?'Security':w.phase==='eng'?'Engineering':'Leadership'}</span>
+      ${now?'<span class="badge">This week</span>':''}</span></div>
+      <ul>${w.items.map(i=>`<li>${i}</li>`).join("")}</ul></div>`;}).join("");
+  // today's focus
+  const tf=document.getElementById("todayFocus");
+  if(cur===-2){tf.innerHTML=`Your plan starts <strong>Mon ${fmt(WEEKS[0].start)}</strong>. Get a head start on the Copilot security course.`;}
+  else{const w=WEEKS[cur];tf.innerHTML=`<strong>Week ${w.w}: ${w.t}</strong><ul style="margin:8px 0 0;padding-left:18px;line-height:1.7">${w.items.map(i=>`<li>${i}</li>`).join("")}</ul>`;}
+}
+
+function renderLinkedIn(){
+  document.getElementById("liList").innerHTML=LINKEDIN.map((x,i)=>{const d=state.linkedin[i];
+    return `<div class="li"><input type="checkbox" ${d?'checked':''} onchange="toggleLi(${i},this.checked)">
+      <label class="${d?'muted':''}" style="${d?'text-decoration:line-through':''}">${x}</label></div>`;}).join("");
+}
+function toggleLi(i,v){state.linkedin[i]=v;save();toast(v?"Milestone done 🎉":"Unchecked");renderLinkedIn();}
+
+function renderCourseSelect(){
+  document.getElementById("lCourse").innerHTML=PROGRAMS.map(p=>`<optgroup label="${p.name}">`+
+    p.courses.map(c=>`<option>${c.n}</option>`).join("")+`</optgroup>`).join("");}
+
+function renderLogs(){
+  const el=document.getElementById("logList");
+  if(!state.logs.length){el.innerHTML="No sessions logged yet.";return;}
+  el.classList.remove("muted");
+  el.innerHTML=state.logs.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,30).map((l,idx)=>
+    `<div class="logrow"><span class="d">${fmt(l.date)}</span><span class="h">${(+l.hours).toFixed(2)}h</span>
+     <span class="c">${l.course}${l.notes?` — ${l.notes}`:''}</span>
+     <button class="ghost sm" style="margin-left:auto" onclick="delLog('${l.id}')">✕</button></div>`).join("");
+}
+function addLog(){const date=document.getElementById("lDate").value;const hours=+document.getElementById("lHours").value;
+  if(!date||!hours){toast("Add a date and hours");return;}
+  state.logs.push({id:Date.now()+"",date,hours,course:document.getElementById("lCourse").value,notes:document.getElementById("lNotes").value.trim()});
+  document.getElementById("lNotes").value="";save();renderAll();toast("Session logged — keep the streak alive 🔥");}
+function delLog(id){state.logs=state.logs.filter(l=>l.id!==id);save();renderAll();}
+
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ai-cert-tracker-backup.json";a.click();toast("Backup downloaded");}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{state=JSON.parse(r.result);save();renderAll();toast("Data imported");}catch(x){toast("Invalid file");}};r.readAsText(f);}
+
+/* ---------- NOTIFICATIONS ---------- */
+function enableNotify(){
+  if(!("Notification"in window)){toast("This browser has no notifications");return;}
+  Notification.requestPermission().then(p=>{
+    if(p==="granted"){state.notify=true;save();toast("Reminders on — open this page on weekdays");maybeRemind();}
+    else toast("Permission denied");});
+}
+function testNotify(){if(Notification.permission==="granted")
+  new Notification("AI Cert Tracker",{body:"This is your 2–3 hour study nudge. Let's go 🛡️"});
+  else toast("Enable reminders first");}
+function maybeRemind(){
+  if(!state.notify||Notification.permission!=="granted")return;
+  const now=new Date();const wd=now.getDay();const iso=now.toISOString().slice(0,10);
+  if(wd===0||wd===6)return;
+  const loggedToday=state.logs.some(l=>l.date===iso);
+  if(!loggedToday)setTimeout(()=>new Notification("AI Cert Tracker — study reminder",
+    {body:"You haven't logged your 2–3 hrs today. Open the tracker and keep the streak going 🔥"}),1500);
+}
+
+/* ---------- INIT ---------- */
+function renderAll(){progDonut();renderStats();renderProgBars();renderCourses();renderWeeks();renderLinkedIn();renderLogs();}
+document.getElementById("lDate").value=new Date().toISOString().slice(0,10);
+document.getElementById("todayStr").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+if(state.notify&&"Notification"in window&&Notification.permission==="granted")
+  document.getElementById("notifyBtn").textContent="🔔 Reminders on";
+renderCourseSelect();renderAll();maybeRemind();
+</script>
+</body>
+</html>
