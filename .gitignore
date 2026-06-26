@@ -2,3 +2,4 @@ node_modules/
 .DS_Store
 *.log
 ai-cert-tracker-backup.json
+ruvector.db
