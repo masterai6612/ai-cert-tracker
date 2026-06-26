@@ -3,9 +3,8 @@
 An interactive, single-file study tracker for a 14-week AI / AI-security certification sprint on Coursera. Built to log daily study, track course completion, keep a weekday streak, follow a security-first plan, and stay visible on LinkedIn.
 
 ## Features
-- **Dashboard** — weekday streak, hours this week, total hours, certs complete, today's focus.
-- **14-Week Plan** — security-first sequence with the current week auto-highlighted.
-- **Courses** — all six programs; tick courses as you finish; progress saved per device.
+- **Dashboard** — weekday streak, hours this week, total hours, certs complete, today's focus, and the full **Program → Course → Module** tracker. Tick the exact Coursera modules you finish; completion rolls up to the course and certificate. Progress saved per device.
+- **14-Week Plan** — security-first sequence with the current week auto-highlighted; open a week for its tasks.
 - **Daily Log** — record date / hours / course / notes; export & import a JSON backup.
 - **LinkedIn** — milestone checklist + ready-to-use post templates.
 - **Reminders** — opt-in browser notifications nudge you on weekdays if you haven't logged.
